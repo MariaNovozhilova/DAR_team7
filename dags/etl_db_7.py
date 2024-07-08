@@ -31,36 +31,8 @@ dag = DAG(
 )
 
 
-sch_init = PostgresOperator(
-    task_id='schema_init',
-    sql = schema_init,
-    postgres_conn_id = 'etl_db_7',
-    dag=dag
-)
-
-
-tb_init = PostgresOperator(
-    task_id='tables_init',
-    sql = tables_init,
-    postgres_conn_id = 'etl_db_7',
-    dag=dag
-)
-
-
-truncate_task = []
-for table in tables:
-    fname = fullName(dest_schema, table)
-    t_task = PostgresOperator(
-        task_id=f'truncate_table_{fname}',
-        sql = f"TRUNCATE TABLE {fname}",
-        postgres_conn_id = 'etl_db_7',
-        dag=dag
-    )
-    truncate_task.append(t_task)
-
-
-truncate_end = EmptyOperator(
-    task_id='truncate_end',
+start_dag = EmptyOperator(
+    task_id='start_dag',
     dag=dag
 )
 
@@ -86,4 +58,4 @@ insertion_end = EmptyOperator(
 )
 
 
-sch_init >> tb_init >> truncate_task >> truncate_end >> insertion_task >> insertion_end
+start_dag >> insertion_task >> insertion_end
