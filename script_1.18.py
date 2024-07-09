@@ -1,7 +1,7 @@
 import psycopg
 import json
 
-tables = ['базы_данных', 'базы_данных_и_уровень_знаний_сотру', 'инструменты', 'инструменты_и_уровень_знаний_сотр',
+tables = ['базы_данных','базы_данных_и_уровень_знаний_сотру', 'инструменты', 'инструменты_и_уровень_знаний_сотр',
          'образование_пользователей', 'опыт_сотрудника_в_отраслях', 'опыт_сотрудника_в_предметных_обла', 
          'отрасли', 'платформы', 'платформы_и_уровень_знаний_сотруд', 'предметная_область', 'резюмедар', 
          'сертификаты_пользователей', 'сотрудники_дар', 'среды_разработки', 'среды_разработки_и_уровень_знаний_', 
@@ -42,7 +42,13 @@ def write_data(table):
                     copy2.write(data)
 
 for table in tables:
-    write_data(table)
+    try: 
+        write_data(table)
+        print(f'{table} finished')
+    except Exception as e:
+        connection_source = create_connection(dsn_source["db_name"], dsn_source["db_user"], dsn_source["db_password"], dsn_source["db_host"], dsn_source["db_port"])
+        connection_new = create_connection(dsn_ods["db_name"], dsn_ods["db_user"], dsn_ods["db_password"], dsn_ods["db_host"], dsn_ods["db_port"])
+        write_data(table)
 
 connection_new.commit()
 connection_new.close()
