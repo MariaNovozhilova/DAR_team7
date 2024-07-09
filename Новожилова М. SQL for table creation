@@ -177,7 +177,7 @@ CREATE TABLE IF NOT EXISTS ods."среды_разработки"
     "Дата изм." text COLLATE pg_catalog."default",
     id integer) ;
 
-CREATE TABLE IF NOT EXISTS ods."среды_разработки_и_уровень_знаний"
+CREATE TABLE IF NOT EXISTS ods."среды_разработки_и_уровень_знаний_"
 ("название" character varying(50) COLLATE pg_catalog."default",
     "активность" character varying(50) COLLATE pg_catalog."default",
     "Сорт." integer,
@@ -215,7 +215,7 @@ CREATE TABLE IF NOT EXISTS ods."типы_систем"
     id integer
     ); 
     
-CREATE TABLE IF NOT EXISTS ods."типы_системи_и_уровень_знаний_сотру"
+CREATE TABLE IF NOT EXISTS ods."типы_систем_и_уровень_знаний_сотру"
 (
 "название" character varying(50) COLLATE pg_catalog."default",
     "активность" character varying(50) COLLATE pg_catalog."default",
@@ -324,4 +324,3 @@ CREATE TABLE IF NOT EXISTS ods."языки_программирования_и_�
     "дата" text COLLATE pg_catalog."default",
     "Уровень знаний" text COLLATE pg_catalog."default",
     "Языки программирования" text COLLATE pg_catalog."default");
-
