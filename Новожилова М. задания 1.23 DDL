@@ -1,0 +1,188 @@
+CREATE TABLE IF NOT EXISTS dds."базы_данных"
+(
+ 	"название" text,
+    	"активность" bool,
+    	"Сорт." integer,
+    	"Дата изм." TIMESTAMP WITH TIME ZONE,
+    	id integer PRIMARY KEY
+);
+
+CREATE TABLE IF NOT EXISTS dds."базы_данных_и_уровень_знаний_сотру"
+(
+	"название" text,
+    	"активность" bool,
+    	"Сорт." integer,
+    	"Дата изм." TIMESTAMP WITH TIME ZONE,
+    	id integer PRIMARY KEY,
+    	"Базы данных" text,
+    	"дата" date,
+    	"Уровень знаний" varchar(50)
+);
+
+CREATE TABLE IF NOT EXISTS dds."инструменты"
+(
+	"название" text,
+    	"активность" bool,
+    	"Сорт." integer,
+    	"Дата изм." TIMESTAMP WITH TIME ZONE,
+    	id integer PRIMARY KEY
+    	);
+    	 
+
+CREATE TABLE IF NOT EXISTS dds."инструменты_и_уровень_знаний_сотр"
+(	
+	"название" varchar(50),
+    	"активность" bool,
+    	"Сорт." integer,
+    	"Дата изм." TIMESTAMP WITH TIME ZONE,
+    	id integer PRIMARY KEY,
+    	"дата" date,
+    	"инструменты" text,
+    	"Уровень знаний" varchar(50)
+    	);
+
+
+CREATE TABLE IF NOT EXISTS dds."образование_пользователей"
+(
+	"User ID" integer,
+   	"активность" bool,
+    	"Сорт." integer,
+    	"Дата изм." TIMESTAMP WITH TIME ZONE,
+    	id integer PRIMARY KEY,
+    	"Уровень образование" text,
+    	"Название учебного заведения" text,
+    	"Фиктивное название" varchar(20),
+    	"Факультет, кафедра" text,
+    	"специальность" text,
+   	"квалификация" text,
+    	"Год окончания" integer
+    	);
+
+CREATE TABLE IF NOT EXISTS dds."опыт_сотрудника_в_отраслях"
+(
+	"User ID" integer,
+    	"активность" bool,
+   	 "Сорт." integer,
+    	"Дата изм." TIMESTAMP WITH TIME ZONE,
+   	 id integer PRIMARY KEY,
+   	 "дата" date,
+    	"отрасли" varchar(50),
+    	"Уровень знаний в отрасли" text
+    	);
+
+CREATE TABLE IF NOT EXISTS dds."опыт_сотрудника_в_предметных_обла"
+(
+ 	"User ID" integer,
+    	"активность" bool,
+    	"Сорт." integer,
+    	"Дата изм." TIMESTAMP WITH TIME ZONE,
+    	id integer PRIMARY KEY,
+    	"дата" date,
+    	"Предментые области" varchar(50),
+    	"Уровень знаний в предметной облас" text
+    	);
+    	
+CREATE TABLE IF NOT EXISTS dds."отрасли"
+(
+	"название" varchar(50),
+    	"активность" bool,
+    	"Сорт." integer,
+    	"Дата изм." TIMESTAMP WITH TIME ZONE,
+    	id integer PRIMARY KEY
+    	); 
+    	
+CREATE TABLE IF NOT EXISTS dds."платформы"
+(
+	"название" varchar(50),
+    	"активность" bool,
+    	"Сорт." integer,
+    	"Дата изм." TIMESTAMP WITH TIME ZONE,
+    	id integer PRIMARY KEY
+    	);
+    	
+CREATE TABLE IF NOT EXISTS dds."платформы_и_уровень_знаний_сотруд"
+(
+	"User ID" integer,
+    	"активность" bool,
+   	 "Сорт." integer,
+    	"Дата изм." TIMESTAMP WITH TIME ZONE,
+    	id integer PRIMARY KEY,
+    	"дата" date,
+    	"платформы" varchar(50),
+    	"Уровень знаний" varchar(50)
+    	);
+    	
+CREATE TABLE IF NOT EXISTS dds."предметная_область"
+(    
+	"название" text,
+    	"активность" bool,
+    	"Сорт." integer,
+   	 "Дата изм." TIMESTAMP WITH TIME ZONE,
+    	id integer PRIMARY KEY
+);   	
+
+CREATE TABLE IF NOT EXISTS dds."резюмедар"  
+(
+	"UserID" integer,
+    	"ResumeID" integer PRIMARY KEY,
+    	"Активность" bool,
+    	"Образование" text,
+    	"Сертификаты/Курсы" text,
+    	"Языки" text,
+    	"Базыданных" text,
+    	"Инструменты" text,
+    	"Отрасли" text,
+    	"Платформы" text,
+    	"Предметныеобласти" text,
+    	"Средыразработки" text,
+    "Типысистем" text,
+    "Фреймворки" text,
+    "Языкипрограммирования" text,
+    "Технологии" text);
+    
+CREATE TABLE IF NOT EXISTS dds."сертификаты_пользователей"
+(	"User ID" integer,
+    	"активность" bool,
+    	"Сорт." integer,
+    	"Дата изм." TIMESTAMP WITH TIME ZONE,
+    	id integer,
+    	"Год сертификата" integer,
+    	"Наименование сертификата" text,
+    	"Организация, выдавшая сертификат" text);	
+
+CREATE TABLE IF NOT EXISTS dds."сотрудники_дар" 
+(
+    id integer PRIMARY KEY,
+    "Дата рождения" date,
+    "активность" bool,
+    "пол" varchar(3),
+    "фамилия" text,
+    "имя" text,
+    "Последняя авторизация" TIMESTAMP WITH TIME ZONE,
+    "должность" text,
+    "цфо" text,
+    "Дата регистрации" TIMESTAMP WITH TIME ZONE,
+    "Дата изменения" TIMESTAMP WITH TIME ZONE,
+    "Подразделение" text,
+    "E-Mail" text,
+    "логин" text ,
+    "компания" text,
+    "Город проживания" text
+);
+
+CREATE TABLE IF NOT EXISTS dds."среды_разработки"
+(	"название" text,
+    "активность" bool,
+    "Сорт." integer,
+    "Дата изм." TIMESTAMP WITH TIME ZONE,
+    id integer) ;
+
+CREATE TABLE IF NOT EXISTS dds."среды_разработки_и_уровень_знаний"
+("название" text,
+    "активность" bool,
+    "Сорт." integer,
+    "Дата изм." TIMESTAMP WITH TIME ZONE,
+    id integer,
+    "дата" date,
+    "Среды разработки" text,
+    "Уровень знаний" varchar(50));
