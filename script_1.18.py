@@ -1,4 +1,4 @@
-def copy_table:
+def copy_table():
     import psycopg
     import json
     
@@ -38,6 +38,8 @@ def copy_table:
         print(f'Copy data from {table}')
         with connection_source as conn1, connection_new as conn2:
             with conn1.cursor().copy(f'COPY source_data."{table}" TO STDOUT') as copy1:
+                 with conn2.cursor() as cur:
+                    cur.execute(f'TRUNCATE ods.{table}')
                 with conn2.cursor().copy(f'COPY ods."{table}" FROM STDIN') as copy2:
                     for data in copy1:
                         copy2.write(data)
