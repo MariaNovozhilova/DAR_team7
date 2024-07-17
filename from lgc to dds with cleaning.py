@@ -41,20 +41,27 @@ tables = ['dbms', 'dbms_and_employee_level', 'domain', 'education', 'employee', 
 # создаю словарь с sql скриптами всех обработок и по очереди записываю в него запросы
 
 SQL_dict = {
-'sql_dael' : '''TRUNCATE TABLE dds.dbms_and_employee_level; INSERT INTO dds.dbms_and_employee_level
+'sql_dael' : '''TRUNCATE TABLE dds.dbms_and_employee_grade; INSERT INTO dds.dbms_and_employee_grade
 (id, user_id, updated_at, sort, grade, active, "date", dbms)
 SELECT id
 , CAST (regexp_replace(ldael.user_id, '[^0-9]', '', 'g') AS INTEGER)
 , CAST(ldael.updated_at AS date)
 , ldael.sort
-, CASE WHEN ldael.grade = '' THEN '115637'
-	   ELSE regexp_replace(ldael.grade, '[^0-9]', '', 'g') END
+, CAST (CASE WHEN ldael.grade = '' THEN '115637'
+	   ELSE regexp_replace(ldael.grade, '[^0-9]', '', 'g') END AS INTEGER)
 , CAST(CASE WHEN ldael.active = 'Да' THEN 'True'
 			WHEN ldael.active = 'Нет' THEN 'False' END AS BOOL)
-, CAST(CASE 
-		when ldael."date" = '' then null end AS date) AS "date"
-, regexp_replace(ldael.dbms, '[^0-9]', '', 'g')
-FROM lgc.dbms_and_employee_level AS ldael;
+, CAST(NULLIF(ldael.date, '') AS date)
+, CAST(regexp_replace(ldael.dbms, '[^0-9]', '', 'g') AS INTEGER)
+FROM lgc.dbms_and_employee_grade AS ldael;
+UPDATE dds.dbms_and_employee_grade
+SET sort = CAST(CASE WHEN grade = '115637' THEN '100'
+	WHEN grade = '115638' THEN '200'
+	WHEN grade = '115639' THEN '300'
+	WHEN grade = '115640' THEN '400'
+	WHEN grade = '115641' THEN '500'
+	WHEN grade = '283045' THEN '600' 
+	ELSE NULL END AS INTEGER);
 '''}
 
 SQL_dict['sql_d'] = ''' TRUNCATE TABLE dds.dbms;
@@ -65,7 +72,7 @@ SELECT ld.id
 , ld.sort
 , CAST(CASE WHEN ld.active = 'Да' THEN 'True'
 			WHEN ld.active = 'Нет' THEN 'False' END AS BOOL)
-,  ld.dbms
+, CAST (ld.dbms as text)
 FROM lgc.dbms AS ld;'''
 
 SQL_dict['sql_dom'] =  '''TRUNCATE TABLE dds.domain; INSERT INTO dds.domain
@@ -78,8 +85,8 @@ SELECT ldom.id
 ,  ldom."domain"
 FROM lgc.domain AS ldom;'''
 
-SQL_dict['sql_le'] = '''TRUNCATE TABLE dds.education; INSERT INTO dds.education
-(user_id, id, year_graduated, updated_at, institution_name, sort, education_level
+SQL_dict['sql_le'] = '''TRUNCATE TABLE dds.employee_education_level; INSERT INTO dds.employee_education_level
+(user_id, id, year_graduated, updated_at, institution_name, sort, level
 , faculty_department, short_name, active, qualification, specialty)
 SELECT le.user_id
 , le.id
@@ -87,14 +94,14 @@ SELECT le.user_id
 , CAST(le.updated_at AS date)
 , le.institution_name
 , le.sort
-, regexp_replace(le.education_level, '[^0-9]', '', 'g')
+, CAST(regexp_replace(le.level, '[^0-9]', '', 'g') AS integer)
 , le.faculty_department
 , le.short_name
 , CAST(CASE WHEN le.active = 'Да' THEN 'True'
 			WHEN le.active = 'Нет' THEN 'False' END AS BOOL)
 , le.qualification
 , le.specialty
-FROM lgc.education AS le;'''
+FROM lgc.employee_education_level AS le;'''
 
 SQL_dict['sql_lem'] = '''TRUNCATE TABLE dds.employee;
 INSERT INTO dds.employee
@@ -113,7 +120,7 @@ SELECT COALESCE (NULLIF(lem.email,''),'ivanivanych@korus.ru')
 , COALESCE (NULLIF(lem."name",''),'Иван') AS name
 , lem.company
 , lem.login
-, lem.department
+, ltrim(replace(lem.department, '.', ''))
 , COALESCE (NULLIF(lem.gender,''),'male') AS gender
 , COALESCE (NULLIF(lem.surname,''),'Иванов') AS surname
 , lem.frc
@@ -131,17 +138,19 @@ SELECT lemc.user_id
 , lemc.sort
 , CAST(CASE WHEN lemc.active = 'Да' THEN 'True'
 			WHEN lemc.active = 'Нет' THEN 'False' END AS BOOL)
-FROM lgc.employee_certificate AS lemc;'''
+FROM lgc.employee_certificate AS lemc;
+DELETE FROM dds.employee_certificate
+WHERE title LIKE '%Наименование%';'''
 
 SQL_dict['sql_lede'] = '''TRUNCATE TABLE dds.employee_domain_experience; INSERT INTO dds.employee_domain_experience
-(user_id, id, updated_at, domain, sort, domain_experience, active, "date")
+(user_id, id, updated_at, domain, sort, experience, active, "date")
 SELECT lede.user_id
 , lede.id
 , NULLIF(lede.updated_at,''):: date AS updated_at
-, regexp_replace(lede.domain, '[^0-9]', '', 'g')
+, CAST(regexp_replace(lede.domain, '[^0-9]', '', 'g') AS INTEGER)
 , lede.sort
-, CASE WHEN lede.domain_experience = '' THEN '115761' 
-ELSE regexp_replace(lede.domain_experience, '[^0-9]', '', 'g') END
+, CAST(CASE WHEN lede.experience = '' THEN '115761' 
+ELSE regexp_replace(lede.experience, '[^0-9]', '', 'g') END AS INTEGER)
 , CAST(CASE WHEN lede.active = 'Да' THEN 'True'
 			WHEN lede.active = 'Нет' THEN 'False' END AS BOOL)
 , NULLIF(lede.date,''):: date
@@ -164,12 +173,12 @@ SELECT liee.user_id
 , liee.id
 , NULLIF(liee.updated_at,''):: date AS updated_at
 , liee.sort
-, CASE WHEN liee.experience = '' THEN '115761'
-	   ELSE regexp_replace(liee.experience, '[^0-9]', '', 'g') END
+, CAST(CASE WHEN liee.experience = '' THEN '115761'
+	   ELSE regexp_replace(liee.experience, '[^0-9]', '', 'g') END AS INTEGER)
 , CAST(CASE WHEN liee.active = 'Да' THEN 'True'
 			WHEN liee.active = 'Нет' THEN 'False' END AS BOOL)
 , NULLIF(liee."date",''):: date AS "date"
-, regexp_replace(liee.industry, '[^0-9]', '', 'g')
+, CAST(regexp_replace(liee.industry, '[^0-9]', '', 'g') AS INTEGER)
 FROM lgc.industry_employee_experience AS liee;'''
 
 SQL_dict['sql_lp'] = '''TRUNCATE TABLE dds.platform;
@@ -190,12 +199,12 @@ SELECT lpeg.user_id
 , lpeg.id
 , NULLIF(lpeg.updated_at,''):: date AS updated_at
 , lpeg.sort
-, CASE WHEN lpeg.grade = '' THEN '115638'
-		ELSE regexp_replace(lpeg.grade, '[^0-9]', '', 'g') END
+, CAST(CASE WHEN lpeg.grade = '' THEN '115638'
+		ELSE regexp_replace(lpeg.grade, '[^0-9]', '', 'g') END AS INTEGER)
 , CAST(CASE WHEN lpeg.active = 'Да' THEN 'True'
 			WHEN lpeg.active = 'Нет' THEN 'False' END AS BOOL)
 , NULLIF(lpeg."date",''):: date AS "date"
-, regexp_replace(lpeg.platform, '[^0-9]', '', 'g')
+, CAST(regexp_replace(lpeg.platform, '[^0-9]', '', 'g') AS INTEGER)
 FROM lgc.platform_and_employee_grade AS lpeg;'''
 
 SQL_dict['sql_program'] = '''TRUNCATE TABLE dds.program;
@@ -209,20 +218,28 @@ SELECT id
 , program
 FROM lgc.program;'''
 
-SQL_dict['sql_program_and_employee_level'] = '''TRUNCATE TABLE dds.program_and_employee_level;
-INSERT INTO dds.program_and_employee_level
+SQL_dict['sql_program_and_employee_grade'] = '''TRUNCATE TABLE dds.program_and_employee_grade;
+INSERT INTO dds.program_and_employee_grade
 (id, updated_at, sort, grade, active, "date", program, user_id)
 SELECT id
 , NULLIF(updated_at,''):: date AS updated_at
 , sort
-, CASE WHEN grade = '' THEN '115638'
-		ELSE regexp_replace(grade, '[^0-9]', '', 'g') END
+, CAST(CASE WHEN grade = '' THEN '115638'
+		ELSE regexp_replace(grade, '[^0-9]', '', 'g') END AS INTEGER)
 , CAST(CASE WHEN active = 'Да' THEN 'True'
 			WHEN active = 'Нет' THEN 'False' END AS BOOL)
 , NULLIF("date",''):: date AS "date"			
-, regexp_replace(program, '[^0-9]', '', 'g')
+, CAST(regexp_replace(program, '[^0-9]', '', 'g') AS INTEGER)
 , CAST (regexp_replace(user_id, '[^0-9]', '', 'g') AS INTEGER)
-FROM lgc.program_and_employee_level;'''
+FROM lgc.program_and_employee_grade;
+UPDATE dds.program_and_employee_grade
+SET sort = CAST(CASE WHEN grade = '115637' THEN '100'
+	WHEN grade = '115638' THEN '200'
+	WHEN grade = '115639' THEN '300'
+	WHEN grade = '115640' THEN '400'
+	WHEN grade = '115641' THEN '500'
+	WHEN grade = '283045' THEN '600' 
+	ELSE NULL END AS INTEGER);'''
 
 SQL_dict['sql_resume'] = '''TRUNCATE TABLE dds.resume;
 INSERT INTO dds.resume
@@ -263,9 +280,9 @@ INSERT INTO dds.sde_and_employee_grade (id, updated_at, sort, sde, grade, active
 SELECT id
 , NULLIF(updated_at,''):: date AS updated_at
 , sort
-, regexp_replace(sde, '[^0-9]', '', 'g')
-, CASE WHEN grade = '' THEN '115638'
-		ELSE regexp_replace(grade, '[^0-9]', '', 'g') END
+, CAST(regexp_replace(sde, '[^0-9]', '', 'g') AS INTEGER)
+, CAST(CASE WHEN grade = '' THEN '115638'
+		ELSE regexp_replace(grade, '[^0-9]', '', 'g') END AS INTEGER)
 , CAST(CASE WHEN active = 'Да' THEN 'True'
 			WHEN active = 'Нет' THEN 'False' END AS BOOL)
 , NULLIF("date",''):: date AS "date"
