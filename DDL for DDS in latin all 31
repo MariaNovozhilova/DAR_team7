@@ -1,280 +1,310 @@
-CREATE TABLE IF NOT EXISTS dds.dbms_and_employee_level
-( id integer primary key,
- "dbms" varchar (50),
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "grade" varchar (50),
- "active" bool,
- "date" date,
- "user_id" integer);
+CREATE SCHEMA IF NOT EXISTS dds;
 
-CREATE TABLE IF NOT EXISTS dds.dbms 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "dbms" text);
+CREATE TABLE IF NOT EXISTS dds.dbms_and_employee_grade (	
+	id integer primary key,
+	"dbms" integer,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"grade" integer,
+	"active" bool,
+	"date" date,
+	"user_id" integer
+);
 
-CREATE TABLE IF NOT EXISTS dds.program_and_employee_level
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "grade" varchar (50),
- "active" bool,
- "date" date,
- "program" varchar (50),
- "user_id" integer);
+CREATE TABLE IF NOT EXISTS dds.dbms (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" bool,
+	"dbms" TEXT
+);
 
-CREATE TABLE IF NOT EXISTS dds.program 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "program" text);
+CREATE TABLE IF NOT EXISTS dds.program_and_employee_grade (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"grade" integer,
+	"active" bool,
+	"date" date,
+	"program" integer,
+	"user_id" integer
+);
 
-CREATE TABLE IF NOT EXISTS dds.education 
-("user_id" integer,
- id integer primary key,
- "year_graduated" integer,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "institution_name" text,
- "sort" integer,
- "education_level" varchar (50),
- "faculty_department" text,
- "short_name" text,
- "active" bool,
- "qualification" text,
- "specialty" text);
+CREATE TABLE IF NOT EXISTS dds."program" (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" bool,
+	"program" TEXT
+);
 
-CREATE TABLE IF NOT EXISTS dds.industry_employee_experience 
-("user_id" integer,
- id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "experience" text,
- "active" bool,
- "date" date,
- "industry" text);
+CREATE TABLE IF NOT EXISTS dds.employee_education_level (
+	"user_id" integer,
+	id integer primary key,
+	"year_graduated" integer,
+	"updated_at" TIMESTAMP,
+	"institution_name" text,
+	"sort" integer,
+	"level" integer,
+	"faculty_department" text,
+	"short_name" text,
+	"active" bool,
+	"qualification" text,
+	"specialty" text);
 
-CREATE TABLE IF NOT EXISTS dds.employee_domain_experience 
-("user_id" integer,
- id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "domain" text,
- "sort" integer,
- "domain_experience" text,
- "active" bool,
- "date" date);
+CREATE TABLE IF NOT EXISTS dds.industry_employee_experience (
+	"user_id" integer,
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"experience" integer,
+	"active" bool,
+	"date" date,
+	"industry" integer
+);
 
-CREATE TABLE IF NOT EXISTS dds.industry 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "industry" text);
+CREATE TABLE IF NOT EXISTS dds.employee_domain_experience (
+	"user_id" integer,
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"domain" integer,
+	"sort" integer,
+	"experience" integer,
+	"active" bool,
+	"date" date
+);
 
-CREATE TABLE IF NOT EXISTS dds.platform_and_employee_grade 
-("user_id" integer,
- id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "grade" varchar (50),
- "active" bool,
- "date" date,
- "platform" text);
+CREATE TABLE IF NOT EXISTS dds.industry (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" bool,
+	"industry" TEXT
+);
 
-CREATE TABLE IF NOT EXISTS dds.platform 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "platform" text);
+CREATE TABLE IF NOT EXISTS dds.platform_and_employee_grade (
+	"user_id" integer,
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"grade" integer,
+	"active" bool,
+	"date" date,
+	"platform" integer
+);
 
-CREATE TABLE IF NOT EXISTS dds.domain 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "domain" text);
+CREATE TABLE IF NOT EXISTS dds.platform (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" bool,
+	"platform" TEXT
+);
 
-CREATE TABLE IF NOT EXISTS dds.resume
-(id integer primary key,
- "user_id" integer,
- "active" bool,
- "dbms" text,
- "program" text,
- "education" text,
- "industry" text,
- "platform" text,
- "domain" text,
- "certificate" text,
- "sde" text,
- "tool" text,
- "software_type" text,
- "framework" text,
- "language" text,
- "programming_language" text);
+CREATE TABLE IF NOT EXISTS dds."domain" (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" bool,
+	"domain" TEXT
+);
 
-CREATE TABLE IF NOT EXISTS dds.employee_certificate 
-("user_id" integer,
- id integer primary key,
- "year" integer,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "title" text,
- "organisation" text,
- "sort" integer,
- "active" bool);
-CREATE TABLE IF NOT EXISTS dds.employee 
-("email" text,
- id integer primary key,
- "city" varchar (50),
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "registered_at" TIMESTAMP WITH TIME ZONE,
- "birth_date" date,
- "last_check_in" TIMESTAMP WITH TIME ZONE,
- "active" bool,
- "position" text,
- "name" varchar (50),
- "company" text,
- "login" varchar (50),
- "department" text,
- "gender" varchar (50),
- "surname" text,
- "frc" varchar (50));
+CREATE TABLE IF NOT EXISTS dds.resume (
+	id integer primary key,
+	"user_id" integer,
+	"active" bool,
+	"dbms" text,
+	"program" text,
+	"education" text,
+	"industry" text,
+	"platform" text,
+	"domain" text,
+	"certificate" text,
+	"sde" text,
+	"tool" text,
+	"software_type" text,
+	"framework" text,
+	"language" text,
+	"programming_language" text
+);
 
-CREATE TABLE IF NOT EXISTS dds.sde_and_employee_grade 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "sde" text,
- "grade" varchar (50),
- "active" bool,
- "date" date,
- "user_id" integer);
+CREATE TABLE IF NOT EXISTS dds.employee_certificate (
+	"user_id" integer,
+	id integer primary key,
+	"year" integer,
+	"updated_at" TIMESTAMP,
+	"title" text,
+	"organisation" text,
+	"sort" integer,
+	"active" bool
+);
 
-CREATE TABLE IF NOT EXISTS dds.sde 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "sde" text);
+CREATE TABLE IF NOT EXISTS dds.employee (
+	"email" text,
+	id integer primary key,
+	"city" varchar (50),
+	"updated_at" TIMESTAMP,
+	"registered_at" TIMESTAMP,
+	"birth_date" date,
+	"last_check_in" TIMESTAMP,
+	"active" bool,
+	"position" text,
+	"name" varchar(50),
+	"company" text,
+	"login" varchar(50),
+	"department" text,
+	"gender" varchar(50),
+	"surname" text,
+	"frc" varchar(50));
 
-CREATE TABLE IF NOT EXISTS dds.tool_and_employee_grade 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "grade" varchar (50),
- "active" bool,
- "date" date,
- "user_id" integer,
- "tool" text);
+CREATE TABLE IF NOT EXISTS dds.sde_and_employee_grade (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"sde" integer,
+	"grade" integer,
+	"active" bool,
+	"date" date,
+	"user_id" integer
+);
 
-CREATE TABLE IF NOT EXISTS dds.tool 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "tool" text);
+CREATE TABLE IF NOT EXISTS dds.sde (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" bool,
+	"sde" TEXT
+);
 
-CREATE TABLE IF NOT EXISTS dds.software_type_employee_grade 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "software_type" text,
- "grade" varchar (50),
- "active" bool,
- "date" date,
- "user_id" integer);
+CREATE TABLE IF NOT EXISTS dds.tool_and_employee_grade (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"grade" integer,
+	"active" varchar(1),
+	"date" date,
+	"user_id" integer,
+	"tool" integer
+);
 
-CREATE TABLE IF NOT EXISTS dds.software_type 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "type" text);
+CREATE TABLE IF NOT EXISTS dds.tool (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" varchar(1),
+	"tool" TEXT
+);
 
-CREATE TABLE IF NOT EXISTS dds.degree 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "level" varchar (50));
+CREATE TABLE IF NOT EXISTS dds.software_type_employee_grade	(
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"software_type" integer,
+	"grade" integer,
+	"active" varchar(1),
+	"date" date,
+	"user_id" integer
+);
 
-CREATE TABLE IF NOT EXISTS dds.foreign_language_level 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "level" varchar (50));
+CREATE TABLE IF NOT EXISTS dds.software_type (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" varchar(1),
+	"type" TEXT
+);
 
-CREATE TABLE IF NOT EXISTS dds.industry_experience 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "experience" text);
+CREATE TABLE IF NOT EXISTS dds.education_level (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" varchar(1),
+	"level" varchar(50));
 
-CREATE TABLE IF NOT EXISTS dds.domain_grade
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "user_id" integer);
+CREATE TABLE IF NOT EXISTS dds.foreign_language_level (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" varchar(1),
+	"level" varchar(50)
+);
 
-CREATE TABLE IF NOT EXISTS dds.knowledge_level 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "level" varchar (50));
+CREATE TABLE IF NOT EXISTS dds.industry_experience (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" varchar(1),
+	"experience" TEXT
+);
 
-CREATE TABLE IF NOT EXISTS dds.framework_and_employee_grade 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "grade" varchar (50),
- "active" bool,
- "date" date,
- "user_id" integer,
- "framework" text);
+CREATE TABLE IF NOT EXISTS dds.experience (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" varchar(1),
+	"experience" text
+);
 
-CREATE TABLE IF NOT EXISTS dds.framework 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "framework" text);
+CREATE TABLE IF NOT EXISTS dds.grade (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" varchar(1),
+	"grade" text
+);
 
-CREATE TABLE IF NOT EXISTS dds.user_language 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "level" varchar (50),
- "active" bool,
- "user_id" integer,
- "language" text);
+CREATE TABLE IF NOT EXISTS dds.framework_and_employee_grade (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"grade" integer,
+	"active" varchar(1),
+	"date" date,
+	"user_id" integer,
+	"framework" integer
+);
 
-CREATE TABLE IF NOT EXISTS dds.programming_language_and_employee_grade 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "grade" varchar (50),
- "programming_language" text,
- "active" bool,
- "date" date,
- "user_id" integer);
+CREATE TABLE IF NOT EXISTS dds.framework (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" varchar(1),
+	"framework" TEXT
+);
 
-CREATE TABLE IF NOT EXISTS dds.programming_language 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "programming_language" text);
+CREATE TABLE IF NOT EXISTS dds.employee_language (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"level" integer,
+	"active" varchar(1),
+	"user_id" integer,
+	"language" integer
+);
 
-CREATE TABLE IF NOT EXISTS dds.language 
-(id integer primary key,
- "updated_at" TIMESTAMP WITH TIME ZONE,
- "sort" integer,
- "active" bool,
- "language" text);
+CREATE TABLE IF NOT EXISTS dds.programming_language_and_employee_grade (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"grade" integer,
+	"programming_language" integer,
+	"active" varchar(1),
+	"date" date,
+	"user_id" integer
+);
 
+CREATE TABLE IF NOT EXISTS dds.programming_language (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" varchar(1),
+	"programming_language" TEXT
+);
+
+CREATE TABLE IF NOT EXISTS dds."language" (
+	id integer primary key,
+	"updated_at" TIMESTAMP,
+	"sort" integer,
+	"active" varchar(1),
+	"language" TEXT
+);
