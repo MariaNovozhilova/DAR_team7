@@ -62,6 +62,15 @@ SET sort = CAST(CASE WHEN grade = '115637' THEN '100'
 	WHEN grade = '115641' THEN '500'
 	WHEN grade = '283045' THEN '600' 
 	ELSE NULL END AS INTEGER);
+-- delete duplicates
+DELETE FROM dds.dbms_and_employee_grade
+WHERE id IN
+	(SELECT id FROM dds.dbms_and_employee_grade
+	EXCEPT SELECT MIN(id) FROM dds.dbms_and_employee_grade
+	GROUP BY user_id, sort, grade, dbms);
+-- delete wrong dbms id
+DELETE FROM dds.dbms_and_employee_grade
+WHERE dbms NOT IN (SELECT id FROM dds.dbms);
 '''}
 
 SQL_dict['sql_d'] = ''' TRUNCATE TABLE dds.dbms;
@@ -73,7 +82,11 @@ SELECT ld.id
 , CAST(CASE WHEN ld.active = 'Да' THEN 'True'
 			WHEN ld.active = 'Нет' THEN 'False' END AS BOOL)
 , CAST (ld.dbms as text)
-FROM lgc.dbms AS ld;'''
+FROM lgc.dbms AS ld;
+
+UPDATE dds.dbms
+SET updated_at = CASE WHEN updated_at > NOW() THEN NOW() 
+ELSE updated_at END;'''
 
 SQL_dict['sql_dom'] =  '''TRUNCATE TABLE dds.domain; INSERT INTO dds.domain
 (id, updated_at, sort, active, "domain")
@@ -90,7 +103,7 @@ SQL_dict['sql_le'] = '''TRUNCATE TABLE dds.employee_education_level; INSERT INTO
 , faculty_department, short_name, active, qualification, specialty)
 SELECT le.user_id
 , le.id
-, le.year_graduated
+, CASE WHEN le.year_graduated > 2030 THEN null ELSE le.year_graduated END
 , CAST(le.updated_at AS date)
 , le.institution_name
 , le.sort
@@ -101,30 +114,46 @@ SELECT le.user_id
 			WHEN le.active = 'Нет' THEN 'False' END AS BOOL)
 , le.qualification
 , le.specialty
-FROM lgc.employee_education_level AS le;'''
+FROM lgc.employee_education_level AS le;
+
+-- set first capital letters in specialty columns for better duplicates identification
+update dds.employee_education_level
+set specialty = initcap(specialty);
+
+-- delete duplicates
+DELETE FROM dds.employee_education_level
+WHERE id IN
+	(SELECT id FROM dds.employee_education_level
+	EXCEPT SELECT MIN(id) FROM dds.employee_education_level
+	GROUP BY user_id, sort, level, year_graduated, faculty_department, specialty);'''
 
 SQL_dict['sql_lem'] = '''TRUNCATE TABLE dds.employee;
 INSERT INTO dds.employee
 (email, id, city, updated_at, registered_at, birth_date, last_check_in, active,
 "position", "name", company, login, department, gender, surname, frc)
-SELECT COALESCE (NULLIF(lem.email,''),'ivanivanych@korus.ru')
+SELECT --COALESCE (NULLIF(lem.email,''),'ivanivanych@korus.ru')
+ ge.email
 , lem.id
 , COALESCE (NULLIF(lem.city,''),'Городок') AS city
 , NULLIF(lem.updated_at,''):: date AS updated_at
 , NULLIF(lem.registered_at,''):: date AS registered_at
 , CAST(COALESCE (NULLIF(lem.birth_date,''),'1984-10-10') AS date) AS birth_date
+--, ge.birth_date
 , NULLIF(lem.last_check_in,''):: date AS last_check_in
 , CAST(CASE WHEN lem.active = 'Да' THEN 'True'
 			WHEN lem.active = 'Нет' THEN 'False' END AS BOOL)
 , NULLIF(lem.position,'') AS "position"
-, COALESCE (NULLIF(lem."name",''),'Иван') AS name
+ --, COALESCE (NULLIF(lem."name",''),'Иван') AS name
+, ge.name
 , lem.company
 , lem.login
 , ltrim(replace(lem.department, '.', ''))
 , COALESCE (NULLIF(lem.gender,''),'male') AS gender
-, COALESCE (NULLIF(lem.surname,''),'Иванов') AS surname
+--, COALESCE (NULLIF(lem.surname,''),'Иванов') AS surname
+, ge.surname
 , lem.frc
-FROM lgc.employee AS lem;'''
+FROM lgc.employee AS lem
+LEFT JOIN g_dds.employee ge ON ge.id = lem.id;'''
 
 SQL_dict['sql_lemc'] = '''TRUNCATE TABLE dds.employee_certificate;
 INSERT INTO dds.employee_certificate
@@ -154,7 +183,14 @@ ELSE regexp_replace(lede.experience, '[^0-9]', '', 'g') END AS INTEGER)
 , CAST(CASE WHEN lede.active = 'Да' THEN 'True'
 			WHEN lede.active = 'Нет' THEN 'False' END AS BOOL)
 , NULLIF(lede.date,''):: date
-FROM lgc.employee_domain_experience AS lede;'''
+FROM lgc.employee_domain_experience AS lede;
+
+-- delete duplicates
+DELETE FROM dds.employee_domain_experience
+WHERE id IN
+	(SELECT id FROM dds.employee_domain_experience
+	EXCEPT SELECT MIN(id) FROM dds.employee_domain_experience
+	GROUP BY user_id, sort, domain, experience);'''
 
 SQL_dict['sql_li'] = '''TRUNCATE TABLE dds.industry; INSERT INTO dds.industry
 (id, updated_at, sort, active, industry)
@@ -179,7 +215,14 @@ SELECT liee.user_id
 			WHEN liee.active = 'Нет' THEN 'False' END AS BOOL)
 , NULLIF(liee."date",''):: date AS "date"
 , CAST(regexp_replace(liee.industry, '[^0-9]', '', 'g') AS INTEGER)
-FROM lgc.industry_employee_experience AS liee;'''
+FROM lgc.industry_employee_experience AS liee;
+
+-- delete duplicates
+DELETE FROM dds.industry_employee_experience
+WHERE id IN
+	(SELECT id FROM dds.industry_employee_experience
+	EXCEPT SELECT MIN(id) FROM dds.industry_employee_experience
+	GROUP BY user_id, sort, industry, experience);'''
 
 SQL_dict['sql_lp'] = '''TRUNCATE TABLE dds.platform;
 INSERT INTO dds.platform
@@ -205,7 +248,27 @@ SELECT lpeg.user_id
 			WHEN lpeg.active = 'Нет' THEN 'False' END AS BOOL)
 , NULLIF(lpeg."date",''):: date AS "date"
 , CAST(regexp_replace(lpeg.platform, '[^0-9]', '', 'g') AS INTEGER)
-FROM lgc.platform_and_employee_grade AS lpeg;'''
+FROM lgc.platform_and_employee_grade AS lpeg;
+UPDATE dds.platform_and_employee_grade
+SET sort = CAST(CASE WHEN grade = '115637' THEN '100'
+	WHEN grade = '115638' THEN '200'
+	WHEN grade = '115639' THEN '300'
+	WHEN grade = '115640' THEN '400'
+	WHEN grade = '115641' THEN '500'
+	WHEN grade = '283045' THEN '600' 
+	ELSE NULL END AS INTEGER);
+
+-- delete duplicates
+DELETE FROM dds.platform_and_employee_grade
+WHERE id IN
+	(SELECT id FROM dds.platform_and_employee_grade
+	EXCEPT SELECT MIN(id) FROM dds.platform_and_employee_grade
+	GROUP BY user_id, sort, grade, platform);
+
+-- delete wrong platform id
+DELETE FROM dds.platform_and_employee_grade
+WHERE platform NOT IN (SELECT id FROM dds.platform);
+'''
 
 SQL_dict['sql_program'] = '''TRUNCATE TABLE dds.program;
 INSERT INTO dds.program
@@ -239,7 +302,15 @@ SET sort = CAST(CASE WHEN grade = '115637' THEN '100'
 	WHEN grade = '115640' THEN '400'
 	WHEN grade = '115641' THEN '500'
 	WHEN grade = '283045' THEN '600' 
-	ELSE NULL END AS INTEGER);'''
+	ELSE NULL END AS INTEGER);
+-- delete duplicates
+DELETE FROM dds.program_and_employee_grade
+WHERE id IN
+	(SELECT id FROM dds.program_and_employee_grade
+	EXCEPT SELECT MIN(id) FROM dds.program_and_employee_grade
+	GROUP BY user_id, sort, grade, program);
+    
+'''
 
 SQL_dict['sql_resume'] = '''TRUNCATE TABLE dds.resume;
 INSERT INTO dds.resume
@@ -287,7 +358,14 @@ SELECT id
 			WHEN active = 'Нет' THEN 'False' END AS BOOL)
 , NULLIF("date",''):: date AS "date"
 , CAST (regexp_replace(user_id, '[^0-9]', '', 'g') AS INTEGER)
-FROM lgc.sde_and_employee_grade;'''
+FROM lgc.sde_and_employee_grade;
+
+-- delete duplicates
+DELETE FROM dds.sde_and_employee_grade
+WHERE id IN
+	(SELECT id FROM dds.sde_and_employee_grade
+	EXCEPT SELECT MIN(id) FROM dds.sde_and_employee_grade
+	GROUP BY user_id, sort, grade, sde);'''
 
 # в цикле запускаю выполнение всех запросов и заполняю dds слой очищенными данными
 for sql in SQL_dict:
