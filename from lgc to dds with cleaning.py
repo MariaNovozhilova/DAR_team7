@@ -40,8 +40,7 @@ tables = ['dbms', 'dbms_and_employee_level', 'domain', 'education', 'employee', 
 
 # создаю словарь с sql скриптами всех обработок и по очереди записываю в него запросы
 
-SQL_dict = {
-'sql_dael' : '''TRUNCATE TABLE dds.dbms_and_employee_grade; INSERT INTO dds.dbms_and_employee_grade
+SQL_dict = {'sql_dael' : '''TRUNCATE TABLE dds.dbms_and_employee_grade; INSERT INTO dds.dbms_and_employee_grade
 (id, user_id, updated_at, sort, grade, active, "date", dbms)
 SELECT id
 , CAST (regexp_replace(ldael.user_id, '[^0-9]', '', 'g') AS INTEGER)
@@ -138,7 +137,6 @@ SELECT --COALESCE (NULLIF(lem.email,''),'ivanivanych@korus.ru')
 , NULLIF(lem.updated_at,''):: date AS updated_at
 , NULLIF(lem.registered_at,''):: date AS registered_at
 , CAST(COALESCE (NULLIF(lem.birth_date,''),'1984-10-10') AS date) AS birth_date
---, ge.birth_date
 , NULLIF(lem.last_check_in,''):: date AS last_check_in
 , CAST(CASE WHEN lem.active = 'Да' THEN 'True'
 			WHEN lem.active = 'Нет' THEN 'False' END AS BOOL)
@@ -154,6 +152,7 @@ SELECT --COALESCE (NULLIF(lem.email,''),'ivanivanych@korus.ru')
 , lem.frc
 FROM lgc.employee AS lem
 LEFT JOIN g_dds.employee ge ON ge.id = lem.id;'''
+
 
 SQL_dict['sql_lemc'] = '''TRUNCATE TABLE dds.employee_certificate;
 INSERT INTO dds.employee_certificate
@@ -308,8 +307,7 @@ DELETE FROM dds.program_and_employee_grade
 WHERE id IN
 	(SELECT id FROM dds.program_and_employee_grade
 	EXCEPT SELECT MIN(id) FROM dds.program_and_employee_grade
-	GROUP BY user_id, sort, grade, program);
-    
+	GROUP BY user_id, sort, grade, program); 
 '''
 
 SQL_dict['sql_resume'] = '''TRUNCATE TABLE dds.resume;
