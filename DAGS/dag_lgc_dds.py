@@ -7,7 +7,7 @@ from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 from airflow.utils.dates import datetime
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from scripts import source_to_ods
+from scripts import lgc_dds_with_cleaning
 
 
 default_args = {
@@ -16,9 +16,9 @@ default_args = {
 }
 
 dag = DAG(
-    'source_to_ods',
+    'lgc_to_dds',
     default_args=default_args,
-    description='Transfer data from source to ods',
+    description='Transfer data lgc to dds and cleaning it',
     schedule_interval=None,  
     catchup=False,           
 )
@@ -31,7 +31,7 @@ start_step = EmptyOperator(
 
 copy_step = PythonOperator(
         task_id='copy_step',
-        python_callable=source_to_ods.move_data,
+        python_callable=lgc_dds_with_cleaning.clean_data,
         dag=dag,
     )
 
